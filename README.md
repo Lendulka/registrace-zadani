@@ -2,7 +2,7 @@
 
 V projektu připraveném v tomto repozitáři vytvořte React komponentu `Registration`, která bude představovat registrační formulář do nějaké webové aplikace, viz obrázek.
 
-<img src="zadani/registrace.png" alt="Formulář" width="50%" height="auto" />
+<img src="./zadani/registrace.png" alt="Formulář" width="50%" height="auto" />
 
 Stylování komponenty řešit nemusíte.
 
