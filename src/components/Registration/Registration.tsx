@@ -1,9 +1,9 @@
 import './Registration.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface FormStructure {
     email: string;
-    username: string;
+    readonly username: string;
     password: string;
     passwordConfirm: string;
 }
@@ -22,39 +22,53 @@ export const Registration = () => {
         passwordConfirm: "",
     })
 
-    const [submit, setSubmit] = useState<boolean>(false)
+    const [submitted, setSubmitted] = useState<boolean>(false)
 
     const [error, setError] = useState<ErrorStructure>({
         email: "",
         passwordConfirm: "",
     })
 
+    useEffect(() => {
+        if (user.email !== "") {
+            let index: number = user.email.indexOf("@")
+            if (index === (-1)) {
+                setUser({ ...user, email: "", username: "" })
+                setError({ ...error, email: "Incorrect e-mail format" })
+            } else {
+                setUser({ ...user, username: user.email.slice(0, index) })
+                setError({ ...error, email: "" })
+            }
+        }
+    }, [user.email])
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUser({ ...user, [e.target.name]: e.target.value })
-        console.log("stav aktualizován")
     }
 
-    const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let index: number = user.email.indexOf("@")
-        if (user.username === "" && index !== (-1)) {
-            setError({ ...error, email: "" })
-            setUser({ ...user, [e.target.name]: user.email.slice(0, index) })
-            console.log(index)
-        } else {
-            setError({ ...error, email: "Incorrect e-mail format" })
-            /*alert("Email musí obsahovat @")*/
-            setUser({ ...user, email: "", username: "" })
+    /*
+        const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            let index: number = user.email.indexOf("@")
+            if (user.username === "" && index !== (-1)) {
+                setUser({ ...user, [e.target.name]: user.email.slice(0, index) })
+                setError({ ...error, email: "" })
+                console.log(index)
+            } else {
+                setUser({ ...user, email: "", username: "" })
+                setError({ ...error, email: "Incorrect e-mail format" })
+                alert("Email musí obsahovat @")
+            }
         }
-    }
+    */
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (user.password === user.passwordConfirm) {
             setError({ ...error, passwordConfirm: "" })
-            setSubmit(true)
+            setSubmitted(true)
             console.log(user)
         } else {
-            setError({ ...error, passwordConfirm: "Password does not match" })
+            setError({ ...error, passwordConfirm: "Passwords do not match" })
             /*alert("Přihlášení nebylo úspěšné.")*/
             setUser({ ...user, password: "", passwordConfirm: "" })
         }
@@ -63,7 +77,7 @@ export const Registration = () => {
     return (
         <div className="form__container">
             <h1>REGISTRATION</h1>
-            {submit ? (
+            {submitted ? (
                 <div>Login was successful!</div>
             ) : (
                 <form className="form" onSubmit={handleSubmit}>
@@ -71,14 +85,13 @@ export const Registration = () => {
                         type="text"
                         className="form__input"
                         name="email"
-                        value={user.email}
+                        defaultValue={user.email}
                         placeholder="Email Address"
                         aria-label="Email Address"
                         onChange={handleChange}
                         required
                         autoFocus
                     />
-                    {error.email && <div>{error.email}</div>}
                     <input
                         type="text"
                         className="form__input"
@@ -86,8 +99,8 @@ export const Registration = () => {
                         value={user.username}
                         placeholder="User Name"
                         aria-label="User Name"
-                        onChange={handleUserChange}
-                        autoComplete="off"
+                        /*onChange={handleUserChange}*/
+                        readOnly
                         required
                     />
                     <input
@@ -110,14 +123,14 @@ export const Registration = () => {
                         onChange={handleChange}
                         required
                     />
-                    {error.passwordConfirm && <div>{error.passwordConfirm}</div>}
-
                     <button className="form__button" type="submit">REGISTER</button>
+
+                    {error.email && <div>{error.email}</div>}
+                    {error.passwordConfirm && <div>{error.passwordConfirm}</div>}
 
                 </form>
             )}
         </div>
     )
 }
-
 
